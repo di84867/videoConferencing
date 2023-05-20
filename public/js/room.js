@@ -737,3 +737,23 @@ cutCall.addEventListener('click', () => {
     location.href = '/';
 })
 
+const validateAndParseFilename = (fileName) => {
+    return fileName.split(' ').join('_').concat('_').concat(new Date().getTime())
+}
+
+fileUploadButton.addEventListener("change", function () {
+    const file = fileUploadButton.files[0];
+    const fileName = validateAndParseFilename(file.name);
+    socket.emit("upload", file, fileName, function callback (status) {
+        console.log(status);
+        const isSuccess = status.message === 'success'
+        if (isSuccess) {
+            const message = `${fileName} has been uploaded.`;
+            socket.emit('message', message, username, roomid)
+            socket.emit('message', fileName, username, roomid, `/files/${fileName}`)
+        }
+        
+    });
+})
+
+
